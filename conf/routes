@@ -1,3 +1,5 @@
 
 # An controller showing a home page message
-GET     /                           controllers.HomeController.index()
+GET     /                               controllers.HomeController.index()
+
+GET     /org/:orgName/contributors     controller.GitHubRankController.getContributors(orgName: String)

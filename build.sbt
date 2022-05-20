@@ -6,7 +6,9 @@ lazy val root = (project in file("."))
     name := "github-rank-challenge",
     scalaVersion := "2.12.8",
     libraryDependencies ++= Seq(
-      guice
+      guice,
+      ws,
+      ehcache
     ),
     scalacOptions ++= Seq(
       "-feature",
