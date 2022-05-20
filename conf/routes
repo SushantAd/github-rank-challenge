@@ -1,0 +1,3 @@
+
+# An controller showing a home page message
+GET     /                           controllers.HomeController.index()
