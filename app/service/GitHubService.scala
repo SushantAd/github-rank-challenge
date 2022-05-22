@@ -1,56 +1,42 @@
 package service
 
-import model.OrganizationRepo
-import play.api.http.Status
-import play.api.libs.ws.{WSClient, WSResponse}
+import com.typesafe.scalalogging.LazyLogging
+import model.{Contributor, RequestContext}
 
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
 import javax.inject.Inject
-
-class GitHubService @Inject()(ws: WSClient, fetchUtil: FetchUtil){
-
-
-  def getOrganizationReposDetails(orgName: String)={
-   val paginationSizeOpt=  for{
-      initialResponse <- wsRequest(UrlBuilder.org(orgName))
-      paginatedResultSize = fetchUtil.extractPaginatedUrls(initialResponse)
-    } yield paginatedResultSize
-
-    paginationSizeOpt map{
-      case Some(nCalls) => {
-
-      }
-      case _ =>
-    }
-  }
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 
-  def getOrganizationReposWithPageSize(orgName: String, nCalls: Int)= {
+/**
+Concrete class for all functionalities in relation to GitHub Services
+@param orgService services all functionalities of a GitHub Organization.
+@param repoService services all functionalities of a GitHub Repository.
+ */
+class GitHubService @Inject()(orgService: OrganizationService, repoService: RepositoryService) extends LazyLogging{
 
-     val repos = (1 to nCalls).foldLeft(Future[List[OrganizationRepo]])((pages, currentPage) =>
-        wsRequest(UrlBuilder.orgWithPageNo(orgName, currentPage)).map(_.json.validate[OrganizationRepo].asOpt).map {
-          case Some(organizationRepo: OrganizationRepo) => pages :+ organizationRepo
-          case _ => List.empty
+  /**
+  Full Load method to get all Contributors - login & contributions for an individual organization.
+  @param orgName name of Github Organization.
+  @implicit RequestContext
+            1) get list of all repos of an organization.
+            2) get list of all Contributors [[Contributor]] of all repos.
+            3) group By login name -> convert to map -> add all contributions for a single login name
+            4) traverse through map and create final list of Contributors
+            5) sort based on the number of contributions.
+   */
+  def getOrganizationContributors(orgName: String)(implicit request: RequestContext): Future[Seq[Contributor]] = {
+      logger.info(s"request received to get Organization Contributors Full load for Organization: ${orgName}")
+      for {
+        orgRepo <- orgService.getOrganizationReposDetails(orgName)
+        repoContributors <- repoService.getRepoContributorsFullLoad(orgRepo)
+        sortedRepoContributors = {
+          repoContributors.groupBy(_.login)
+            .mapValues(_.map(_.contributions).sum)
+            .map(contributor => Contributor(contributor._1, contributor._2)).toSeq
+            .sortBy(_.contributions)(Ordering[Int].reverse)
         }
-      )
-
-  }
-
-  def getOrganizationRepoContributors(repo: String): Future[Option[OrganizationRepo]] =
-    wsRequest(UrlBuilder.repo(repo)).map(_.json.validate[OrganizationRepo].asOpt)
-
-
-  def wsRequest(url: String): Future[WSResponse] ={
-    ws
-      .url(url)
-      .get()
-      .map{response =>
-        response.status match {
-          case Status.OK => response
-          case _=> throw new Exception("") //todo
-        }
-      }
-  }
+      } yield sortedRepoContributors
+  }.recover{case ex => throw ex}
 
 }
