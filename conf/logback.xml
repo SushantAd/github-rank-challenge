@@ -1,24 +1,23 @@
-<!--
-   Copyright (C) Lightbend Inc. <https://www.lightbend.com>
--->
-
-<!-- The default logback configuration that Play uses in dev mode if no other configuration is provided -->
 <configuration>
-
-    <conversionRule conversionWord="coloredLevel" converterClass="play.api.libs.logback.ColoredLevel"/>
-
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%coloredLevel %logger{15} - %message%n%xException{10}</pattern>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
 
-    <logger name="play" level="INFO"/>
+<!-- Uncomment only if you require saving logss to a file + change log path !-->
+<!--    <appender name="FILE" class="ch.qos.logback.core.FileAppender">-->
+<!--        &lt;!&ndash; path to your log file, where you want to store logs &ndash;&gt;-->
+<!--        <file>/Users/yourusername/test.log</file>-->
+<!--        <append>false</append>-->
+<!--        <encoder>-->
+<!--            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>-->
+<!--        </encoder>-->
+<!--    </appender>-->
 
-    <logger name="com.gargoylesoftware.htmlunit.javascript" level="OFF"/>
-
-    <root level="WARN">
-        <appender-ref ref="STDOUT"/>
+    <root level="info">
+        <appender-ref ref="STDOUT" />
+        <!-- Uncomment only if you require saving logs to a file + change log path !-->
+        <!--        <appender-ref ref="FILE" />-->
     </root>
-
 </configuration>

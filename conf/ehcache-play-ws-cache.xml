@@ -1,0 +1,14 @@
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="http://ehcache.org/ehcache.xsd"
+         updateCheck="false">
+
+    <cache name="github-api-cache"
+           maxEntriesLocalHeap="10000"
+           eternal="false"
+           timeToIdleSeconds="360"
+           timeToLiveSeconds="1000"
+           overflowToDisk="false"
+           diskPersistent="false"
+           diskExpiryThreadIntervalSeconds="120"
+           memoryStoreEvictionPolicy="LRU"/>
+</ehcache>
