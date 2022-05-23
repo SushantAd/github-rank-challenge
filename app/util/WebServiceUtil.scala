@@ -53,8 +53,10 @@ class WebServiceUtil @Inject()(ws: WSClient) extends LazyLogging{
   /** TODO - Can be extended to get token type from request context and generate Authorization header accordingly
    */
   private def HeaderValues(implicit requestContext: RequestContext): List[(String, String)] ={
-    requestContext.authorizationToken match {
-      case Some(token) => defaultHeaders ++ List(("Authorization", s"token ${token}"))
+    (Try(sys.env("GH_TOKEN")).toOption,requestContext.authorizationToken) match {
+      case (Some(ghToken), Some(token)) => defaultHeaders ++ List(("Authorization", s"token ${ghToken}"))
+      case (None, Some(token)) => defaultHeaders ++ List(("Authorization", s"token ${token}"))
+      case (Some(ghToken), None) => defaultHeaders ++ List(("Authorization", s"token ${ghToken}"))
       case _ => defaultHeaders
     }
   }
