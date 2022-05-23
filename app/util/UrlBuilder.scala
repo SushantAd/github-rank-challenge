@@ -1,14 +1,14 @@
 package util
 
-/**
- * Url Builder helper classes to create appropriate urls based on name
- * TODO baseUrl can be moved to Constants if it will remain the same or Config if there is a chance for change.
- * @param name
- */
+/** Url Builder helper classe to create appropriate urls based on name
+  * TODO baseUrl can be moved to Constants if it will remain the same or Config if there is a chance for change.
+  * @param name
+  */
 
 case class UrlBuilder(name: String) {
 
-  private val baseUrl = s"https://api.github.com" /*Todo - Should be moved to Constant or Config*/
+  private val baseUrl =
+    s"https://api.github.com" /*Todo - Should be moved to Constant or Config*/
 
   def orgUrl: String =
     s"${baseUrl}/orgs/${name}/repos?per_page=100"
