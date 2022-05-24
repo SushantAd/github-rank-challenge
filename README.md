@@ -6,7 +6,7 @@ repositories and each repository has many contributors. Your goal is to create a
 the name of the organization will return a list of contributors sorted by the number of contributions.
 
 Few Other Requirements:
-1. respond to a GET request at port 8080 and address /org/{org_name}/contributors
+1. respond to a GET request at port 8080 and address /org/{org_name}/contributors\.
    - Change default port in build.sbt   PlayKeys.playDefaultPort := 8080
 2. handle GitHub’s API rate limit restriction using a token that can be set as an environment variable of name GH_TOKEN.
    - Set GH_Token as env variable or pass token in header (with key - Authorization) (Token value currently used is GitHub Personal token - can be extended later)
@@ -52,6 +52,7 @@ GET     /org/:orgName/contributors
 ```
 
 Route definitions:
+
 ```routes
 GET     / 
 ```
@@ -60,6 +61,7 @@ Index route -> Starts when application is run -> "Welcome to Github Rank Challen
 ```routes
 GET     /rate/limit
 ```
+
 Utility API created only for testing purpose, to identify number of API requests still available in rate limit
 and also the next rate limit refresh date time.
 
@@ -81,10 +83,15 @@ Response sample:
 ```routes
 GET     /org/:orgName/contributors      
 ```
+
 Fetch Array of contributors of a specific organization, sorted based on number of contributions made to all repositories worked on.
+
 Request : orgName in url
-Header: Option Authorization header.
+
+Header: Optional Authorization header.
+
 Response sample:
+
 example url: localhost:8080/org/io/contributors
 ```Response
 [
@@ -110,7 +117,8 @@ example url: localhost:8080/org/io/contributors
     }
 ]
 ```
-###Note: API is currently cached for 2 minutes, can be increased/decreased as needed.
+
+### Note: API is currently cached for 2 minutes, can be increased/decreased as needed.
 
 
 ### Application Flow
@@ -121,7 +129,7 @@ Request => Routes => Controller => Cache => Service
 3. List of contributors are than grouped by login and their contributions are added.
 4. The final list is then sorted based on Contribution value of each login.
 5. Final result is responded back to the called.
-6. Error are handles with appropriate error codes (disclaimer: Not all http status codes are managed at present)
+6. Error are handled with appropriate error codes (disclaimer: Not all http status codes are managed at present)
 
 ### Improvements to be added
 1. Integration tests. 
@@ -131,9 +139,10 @@ Request => Routes => Controller => Cache => Service
 ### Edge and Extensions to be noted
 1. At the present any error while fetching the api data returns an error response, this can be further extended to respond
 with a list of both contributions and list of errors for each individual url called.
+
 Example: localhost:8080/org/zio/contributors
-Response: 204 No Content. (This was found while API - testing)
-1 of the repos in ZIO does not have any content. Hence, 204 response.
+
+Response: 204 No Content. (This was found while API - testing) 1 of the repos in ZIO does not have any content. Hence, 204 response.
 
 2. We can ignore urls having errors, at the moment we don't.
 
